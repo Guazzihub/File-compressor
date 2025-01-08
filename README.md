@@ -4,7 +4,7 @@ This project provides a **near-lossless** bulk compression script for images (**
 
 ## Features
 
-1. **Near-lossless compression** using:
+ 1. **Near-lossless compression** using:
    - **PNG**: `pngquant` + `optipng`
    - **JPG**: `jpegtran` (from **libjpeg-turbo**)
    - **WebP**: `cwebp`
@@ -27,20 +27,20 @@ This project provides a **near-lossless** bulk compression script for images (**
 
 1. **Clone** (or download) this repository.
 2. Open **Command Prompt** **as Administrator**.
-3. **Install the tools listed bellow:**
+3. **Install the tools listed below:**
 
 ```cmd
 choco install ffmpeg ghostscript pngquant optipng webp gifsicle qpdf libjpeg-turbo -y
 ```
-- **ffmpeg** handles video compression
-- **ghostscript** handles PDF compression
-- **pngquant + optipng** handle PNG
-- **webp (includes cwebp)** handles WebP images
-- **gifsicle** handles GIF optimization
-- **qpdf** is an alternative PDF tool (optional)
-- **libjpeg-turbo** provides jpegtran for JPG optimization
+- **ffmpeg** handles video compression  
+- **ghostscript** handles PDF compression  
+- **pngquant + optipng** handle PNG  
+- **webp (includes cwebp)** handles WebP images  
+- **gifsicle** handles GIF optimization  
+- **qpdf** is an alternative PDF tool (optional)  
+- **libjpeg-turbo** provides `jpegtran` for JPG optimization  
 
-4. **Install Python dependencies from requirements.txt:**
+4. **Install Python dependencies** from `requirements.txt`:
 ```cmd
 pip install -r requirements.txt
 ```
@@ -62,21 +62,23 @@ python compressor.py
 ```
 
 ## Notes
-- Near-lossless compression means minimal artifacts or changes may occur if quality settings are tweaked (e.g. -q 90 for WebP, -crf 18 in FFmpeg, etc.).
+
+- Near-lossless compression means minimal artifacts or changes may occur if quality settings are tweaked (e.g. `-q 90` for WebP, `-crf 18` in FFmpeg, etc.).
 - Any file that matches a previously stored hash in `processed_files.txt` will be skipped (to prevent re-compression).
-- Removing or clearing processed_files.txt it can cause reprocessing.
-- Make sure the `PATH environment variable` is updated so that the installed tools are recognized.
+- Removing or clearing `processed_files.txt` can cause reprocessing.
+- Make sure the `PATH` environment variable is updated so that the installed tools are recognized.
 
 ## How to Enable/Disable Watchdog
 
 By default, the project can run in **two** modes: batch or real-time.
 
 ### 1. Batch Mode (Watchdog Disabled)
+
 - **Do not import** or install `watchdog`.  
 - **Remove** or **comment out** any code related to `Observer`, `FileSystemEventHandler`, or real-time monitoring.  
 - In `compressor.py`, simply loop over `input_files` folder once and compress each file.
 
-Example snippet (batch):
+**Example snippet (batch):**
 ```python
 def main():
     if not INPUT_FOLDER.exists():
@@ -93,14 +95,15 @@ if __name__ == "__main__":
 ```
 
 ### 2. Real-Time Mode (Watchdog Enabled)
-- Install watchdog (e.g., pip install watchdog).
+
+- Install watchdog (e.g., `pip install watchdog`).
 - Import the necessary classes:
 ```python
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 ```
 
-Example snippet (real-time):
+**Example snippet (real-time):**
 ```python
 class CompressionHandler(FileSystemEventHandler):
     def on_created(self, event):
@@ -128,3 +131,95 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+
+## How to Change Compression Parameters
+
+Below are the **key functions** and parameters you can modify for **near-lossless compression**. Adjust them according to your desired trade-off between **file size** and **quality**.
+
+1. **PNG (`compress_png`)**
+```python
+subprocess.run([
+    "pngquant",
+    "--force",
+    "--output", str(temp_output),
+    "--quality=70-90",  # <-- Adjust range for more or less compression
+    str(file_path)
+], check=True)
+
+subprocess.run(["optipng", "-o7", str(temp_output)], check=True)
+```
+- **--quality=70-90**: Lower the first number for smaller files (with slightly more noticeable compression).  
+- **-o7**: `optipng` optimization level (0–7). Higher is slower but may yield smaller files.
+
+<br>
+
+2. **JPG (`compress_jpg`)**
+```python
+subprocess.run([
+    "jpegtran",
+    "-copy", "none",
+    "-optimize",
+    "-perfect",
+    str(file_path)
+], check=True)
+```
+- These parameters are **near-lossless**.  
+- If you want to reduce quality further, consider using `jpegoptim --max=85` or switching tools.  
+- Note that `jpegtran` in this mode does not reduce quality; it only optimizes.
+
+<br>
+
+3. **GIF (`compress_gif`)**
+```python
+subprocess.run([
+    "gifsicle", "-O3",
+    str(file_path),
+    "--output", str(temp_output)
+], check=True)
+```
+- **-O3** is the highest optimization level for **gifsicle**. Lower might save time but produce a larger file.
+
+<br>
+
+4. **WebP (`compress_webp`)**
+```python
+subprocess.run([
+    "cwebp", "-q", "90",
+    str(file_path),
+    "-o", str(temp_output)
+], check=True)
+```
+- **-q 90**: The quality factor (0–100). Lower is smaller but might introduce artifacts.
+
+<br>
+
+5. **PDF (`compress_pdf`)**
+```python
+subprocess.run([
+    "gswin64c",  # or "gs" if installed differently
+    "-sDEVICE=pdfwrite",
+    "-dCompatibilityLevel=1.4",
+    "-dPDFSETTINGS=/ebook",
+    ...
+], check=True)
+```
+- **/ebook**: Good balance of size and quality.  
+- **/screen**: Smaller files, lower quality  
+- **/printer**: Larger files, higher quality
+
+  <br>
+  
+6. **Video (`compress_video`)**
+```python
+subprocess.run([
+    "ffmpeg", "-y",
+    "-i", str(file_path),
+    "-c:v", "libx264",
+    "-preset", "veryslow",
+    "-crf", "18",
+    "-c:a", "copy",
+    str(temp_output)
+], check=True)
+```
+- **-crf 18**: Lower CRF means higher quality (and bigger files). Around 18–23 is typical for near-lossless.  
+- **-preset veryslow**: Slower encoding but more efficient compression. You can switch to `slow` or `medium` for faster encodes at a slight cost in size.

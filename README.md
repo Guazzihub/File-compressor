@@ -19,8 +19,8 @@ This project provides a **near-lossless** bulk compression script for images (**
 
 ## Requirements
 
-- **Chocolatey** installed ([instructions](https://chocolatey.org/install))
-- **Python** 3.7+ installed (ensure `pip` is available)
+- **Chocolatey** ([instructions](https://chocolatey.org/install))
+- **Python** 3.7+ (ensure `pip` is available)
 - **Ensure input_files folder exists**
 
 ## Installation

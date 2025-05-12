@@ -1,3 +1,5 @@
+# [Clique aqui para ver a versão em Português](https://github.com/Guazzihub/File-compressor/tree/Portugu%C3%AAs)
+
 # Near-Lossless Bulk Compressor
 
 This project provides a **near-lossless** bulk compression script for images (**PNG, JPG, WebP, GIF**), videos (**MP4, MOV, MKV, AVI**), and PDFs on **Windows**.
@@ -45,9 +47,9 @@ choco install ffmpeg ghostscript pngquant optipng webp gifsicle qpdf libjpeg-tur
 pip install -r requirements.txt
 ```
 
-## Folder Structure
+## File Structure
 ```structure
-   ├── compressor.py         # Main
+   ├── compressor.py         # Main script
    ├── requirements.txt      # Dependencies
    ├── processed_files.txt   # Log processed files
    └── input_files\          # Put all the files you want to compress here

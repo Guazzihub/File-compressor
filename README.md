@@ -1,84 +1,84 @@
-# Near-Lossless Bulk Compressor
+# Compressor quase sem Perda
 
-This project provides a **near-lossless** bulk compression script for images (**PNG, JPG, WebP, GIF**), videos (**MP4, MOV, MKV, AVI**), and PDFs on **Windows**.
+Este projeto oferece um script de compressão em lote **quase sem perda** para imagens (**PNG, JPG, WebP, GIF**), vídeos (**MP4, MOV, MKV, AVI**) e PDFs (apenas no **Windows**).
 
-## Features
+## Funcionalidades
 
- 1. **Near-lossless compression** using:
+ 1. Uso do **Compressor quase sem Perda**:
    - **PNG**: `pngquant` + `optipng`
    - **JPG**: `jpegtran` (from **libjpeg-turbo**)
    - **WebP**: `cwebp`
    - **GIF**: `gifsicle`
    - **PDF**: `Ghostscript`
    - **Video**: `FFmpeg` (`CRF ~18`)
-2. **Skips re-processing** of duplicate files by hashing (SHA-1).
-3. Supports either **batch processing** and **optional** real-time monitoring (via `watchdog`).
-4. **Windows-friendly**:
-   - Installs CLI tools via **Chocolatey**.
-   - Installs Python libraries via **pip**.
+2. **Ignora arquivos duplicados e já processados** usando hash SHA-1.
+3. Suporta **processamento em lote** e **monitoramento em tempo real opcional** (via `watchdog`).
+4. Compatível com **Windows**:
+   - Instale as ferramentas de linha de comando via **Chocolatey**
+   - Instale bibliotecas Python via **pip**
 
-## Requirements
+## Requisitos
 
-- **Chocolatey** installed ([instructions](https://chocolatey.org/install))
-- **Python** 3.7+ installed (ensure `pip` is available)
-- **Ensure input_files folder exists**
+- **Chocolatey** ([Instruções de Instalação](https://chocolatey.org/install))
+- **Python** 3.7+ (certifique-se de que o `pip` esteja disponível)
+- A pasta `input_files` deve existir.
 
-## Installation
+## Instalação
 
-1. **Clone** (or download) this repository.
-2. Open **Command Prompt** **as Administrator**.
-3. **Install the tools listed below:**
+1. **Clone** (ou baixe) este repositório.
+2. Abra o **Prompt de Comando como Administrador**.
+3. **Instale as ferramentas necessárias:**
 
 ```cmd
 choco install ffmpeg ghostscript pngquant optipng webp gifsicle qpdf libjpeg-turbo -y
 ```
-- **ffmpeg** handles video compression  
-- **ghostscript** handles PDF compression  
-- **pngquant + optipng** handle PNG  
-- **webp (includes cwebp)** handles WebP images  
-- **gifsicle** handles GIF optimization  
-- **qpdf** is an alternative PDF tool (optional)  
-- **libjpeg-turbo** provides `jpegtran` for JPG optimization  
+- **ffmpeg:** Gerencia compressão de vídeos.
+- **ghostscript:** Gerencia compressão de PDF.  
+- **pngquant + optipng:** Gerencia compressão de PNG.
+- **webp (includes cwebp):** Gerencia compressão de imagens WebP.  
+- **gifsicle:** Gerencia a compressão de GIFs.  
+- **qpdf:** Ferramenta alternativa para PDF. (opcional)
+- **libjpeg-turbo:** Fornece o `jpegtran` para compressão de JPG.  
 
-4. **Install Python dependencies** from `requirements.txt`:
+4. **Instale as dependências Python** listadas em `requirements.txt`:
 ```cmd
 pip install -r requirements.txt
 ```
 
-## Folder Structure
+## Estrutura de Arquivos
 ```structure
-   ├── compressor.py         # Main
-   ├── requirements.txt      # Dependencies
-   ├── processed_files.txt   # Log processed files
-   └── input_files\          # Put all the files you want to compress here
+   ├── compressor.py         # Script principal
+   ├── requirements.txt      # Dependencias
+   ├── processed_files.txt   # Log de arquivos processados
+   └── input_files\          # Coloque todos os arquivos que deseja comprimir nessa pasta
 ```
 
-## Running the Script
+## Executando o Script
 
-1. Place files in `input_files\`.
-2. Run:
+1. Coloque os arquivos em `input_files\`.
+2. Execute o comando:
 ```cmd
 python compressor.py
 ```
 
-## Notes
+## Observações
 
-- Near-lossless compression means minimal artifacts or changes may occur if quality settings are tweaked (e.g. `-q 90` for WebP, `-crf 18` in FFmpeg, etc.).
-- Any file that matches a previously stored hash in `processed_files.txt` will be skipped (to prevent re-compression).
-- Removing or clearing `processed_files.txt` can cause reprocessing.
-- Make sure the `PATH` environment variable is updated so that the installed tools are recognized.
+- Compressão quase sem perda significa que pequenas alterações visuais podem ocorrer, dependendo das configurações de qualidade (ex. `-q 90` para WebP, `-crf 18` para qualidade de vídeos, etc.).
+- Arquivos com hash já presente em `processed_files.txt` serão ignorados (para evitar que seja processado novamente).
+- Apagar o `processed_files.txt` fará com que todos os arquivos sejam reprocessados.
+- Certifique-se de que as ferramentas estão no `PATH` do sistema para serem reconhecidas.
 
-## How to Enable/Disable Watchdog
+## Como Ativar ou Desativar o Watchdog
 
-By default, the project can run in **two** modes: batch or real-time.
+O script pode rodar em **dois** modos: em **lote** ou **tempo real**.
 
-### 1. Batch Mode (Watchdog Disabled)
+### 1. Modo em Lote (Watchdog Desativado)
 
-- **Do not import** or install `watchdog`.  
-- **Remove** or **comment out** any code related to `Observer`, `FileSystemEventHandler`, or real-time monitoring.  
-- In `compressor.py`, simply loop over `input_files` folder once and compress each file.
+- **Não importe** ou instale o `watchdog`.  
+- **Remova** ou **commente** qualquer código referente ao `Observer`, `FileSystemEventHandler`, ou Modo em Lote (Watchdog Desativado).  
+- No  `compressor.py`, faça o loop apenas na pasta `input_files` uma únida vez para compressão dos arquivos.
 
-**Example snippet (batch):**
+**Exemplo de snippet (Lote):**
 ```python
 def main():
     if not INPUT_FOLDER.exists():
@@ -94,16 +94,16 @@ if __name__ == "__main__":
     main()
 ```
 
-### 2. Real-Time Mode (Watchdog Enabled)
+### 2. Modo em Tempo Real (Watchdog Ativado)
 
-- Install watchdog (e.g., `pip install watchdog`).
-- Import the necessary classes:
+- Instale o watchdog (e.g., `pip install watchdog`).
+- Importe as classes necessárias:
 ```python
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 ```
 
-**Example snippet (real-time):**
+**Exemplo de snippet (Tempo Real):**
 ```python
 class CompressionHandler(FileSystemEventHandler):
     def on_created(self, event):
@@ -132,10 +132,9 @@ if __name__ == "__main__":
     main()
 ```
 
-## How to Change Compression Parameters
+## Como Ajustar os Parâmetros de Compressão
 
-Below are the **key functions** and parameters you can modify for **near-lossless compression**. Adjust them according to your desired trade-off between **file size** and **quality**.
-
+Abaixo estão as funções e parâmetros que você pode ajustar para controlar a **qualidade**. e **tamanho dos arquivos**.
 1. **PNG (`compress_png`)**
 ```python
 subprocess.run([
@@ -148,8 +147,8 @@ subprocess.run([
 
 subprocess.run(["optipng", "-o7", str(temp_output)], check=True)
 ```
-- **--quality=70-90**: Lower the first number for smaller files (with slightly more noticeable compression).  
-- **-o7**: `optipng` optimization level (0–7). Higher is slower but may yield smaller files.
+- **--quality=70-90**: Quanto menor o valor, maior a compressão (e perda).
+- **-o7**: Nível de otimização do `optipng` (0-7 sendo que quanto mais alto, mais devagar. O tamanho do arquivo deverá ser menor).
 
 <br>
 
@@ -163,8 +162,8 @@ subprocess.run([
     str(file_path)
 ], check=True)
 ```
-- These parameters are **near-lossless**.   
-- Note that `jpegtran` in this mode does not reduce quality; it only optimizes.
+- Nota: O `jpegtran` não reduz a qualidade, apenas otimiza.
+- Esses parametros são **quase sem perda.**  
 
 <br>
 
@@ -176,7 +175,7 @@ subprocess.run([
     "--output", str(temp_output)
 ], check=True)
 ```
-- **-O3** is the highest optimization level for **gifsicle**. Lower might save time but produce a larger file.
+- **-O3** Nível mais alto de otimização do **gifsicle**. Valores menores vão reduzir o tempo de processamento gerando arquivos maiores.
 
 <br>
 
@@ -188,7 +187,7 @@ subprocess.run([
     "-o", str(temp_output)
 ], check=True)
 ```
-- **-q 90**: The quality factor (0–100). Lower is smaller but might introduce artifacts.
+- **-q 90**: Valores menores geram arquivos menores porém podem significar uma perda considerável na qualidade. (Qualidade de [0–100]).
 
 <br>
 
@@ -202,13 +201,13 @@ subprocess.run([
     ...
 ], check=True)
 ```
-- **/ebook**: Good balance of size and quality.  
-- **/screen**: Smaller files, lower quality  
-- **/printer**: Larger files, higher quality
+- **/ebook**: Boa qualidade com tamanho reduzido.  
+- **/screen**: Menor tamanho, qualidade mais baixa.
+- **/printer**: Alta qualidade, arquivos maiores.
 
   <br>
   
-6. **Video (`compress_video`)**
+6. **Vídeo (`compress_video`)**
 ```python
 subprocess.run([
     "ffmpeg", "-y",
@@ -220,5 +219,5 @@ subprocess.run([
     str(temp_output)
 ], check=True)
 ```
-- **-crf 18**: Lower CRF means higher quality (and bigger files). Around 18–23 is typical for near-lossless.  
-- **-preset veryslow**: Slower encoding but more efficient compression. You can switch to `slow` or `medium` for faster encodes at a slight cost in size.
+- **-crf 18**: Menor valor = maior qualidade (arquivos maiores). Faixa comum para baixa perda varia entre 18–23.  
+- **-preset veryslow**: Melhor compressão (mais lento). Use `slow` ou `medium` para mais agilidade no processamento.

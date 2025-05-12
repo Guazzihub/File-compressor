@@ -163,8 +163,7 @@ subprocess.run([
     str(file_path)
 ], check=True)
 ```
-- These parameters are **near-lossless**.  
-- If you want to reduce quality further, consider using `jpegoptim --max=85` or switching tools.  
+- These parameters are **near-lossless**.   
 - Note that `jpegtran` in this mode does not reduce quality; it only optimizes.
 
 <br>

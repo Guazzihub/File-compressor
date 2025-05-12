@@ -32,13 +32,13 @@ This project provides a **near-lossless** bulk compression script for images (**
 ```cmd
 choco install ffmpeg ghostscript pngquant optipng webp gifsicle qpdf libjpeg-turbo -y
 ```
-- **ffmpeg** handles video compression  
-- **ghostscript** handles PDF compression  
-- **pngquant + optipng** handle PNG  
-- **webp (includes cwebp)** handles WebP images  
-- **gifsicle** handles GIF optimization  
-- **qpdf** is an alternative PDF tool (optional)  
-- **libjpeg-turbo** provides `jpegtran` for JPG optimization  
+- **ffmpeg:** handles video compression.
+- **ghostscript:** handles PDF compression. 
+- **pngquant + optipng:** handle PNG compression.
+- **webp (includes cwebp):** handles WebP compression. 
+- **gifsicle:** handles GIF compression.
+- **qpdf:** is an alternative PDF tool. (optional)
+- **libjpeg-turbo:** provides `jpegtran` for JPG compression.  
 
 4. **Install Python dependencies** from `requirements.txt`:
 ```cmd
